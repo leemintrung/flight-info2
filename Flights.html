@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng Thông Tin Chuyến Bay</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .board {
+            width: 80%;
+            max-width: 800px;
+            background-color: #0033cc;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+        h2 {
+            margin: 0;
+            font-size: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .time {
+            font-size: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #002b99;
+        }
+        tr:nth-child(even) {
+            background-color: #0044cc;
+        }
+        tr:nth-child(odd) {
+            background-color: #003bb5;
+        }
+        .status-cancelled {
+            color: red;
+        }
+        .status-delayed {
+            color: yellow;
+        }
+        .btn {
+            margin-top: 15px;
+            padding: 10px 15px;
+            border: none;
+            background-color: #ffcc00;
+            color: black;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .btn:hover {
+            background-color: #ff9900;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="board">
+        <h2>
+            🛫 DEPARTURES
+            <span class="time" id="currentTime">00:00</span>
+        </h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>TIME</th>
+                    <th>DESTINATION</th>
+                    <th>FLIGHT</th>
+                    <th>GATE</th>
+                    <th>REMARKS</th>
+                </tr>
+            </thead>
+            <tbody id="flightData">
+                <!-- Dữ liệu sẽ được thêm bằng JavaScript -->
+            </tbody>
+        </table>
+        <button class="btn" onclick="nextFlights()">Next Flights</button>
+    </div>
+
+    <script>
+        const flights = [
+            { time: "20:08", destination: "LONDON", flight: "MU5984", gate: "12", status: "CANCELLED" },
+            { time: "20:14", destination: "PARIS", flight: "AF5870", gate: "02", status: "DELAYED" },
+            { time: "20:28", destination: "NEW YORK", flight: "AC 103", gate: "13", status: "CANCELLED" },
+            { time: "20:35", destination: "TORONTO", flight: "KA 197", gate: "11", status: "CANCELLED" },
+            { time: "20:47", destination: "HONG KONG", flight: "CX6471", gate: "25", status: "CANCELLED" },
+            { time: "20:58", destination: "MADRID", flight: "IB3941", gate: "03", status: "DELAYED" },
+            { time: "21:09", destination: "SYDNEY", flight: "LH5021", gate: "17", status: "CANCELLED" },
+            { time: "21:18", destination: "TOKYO", flight: "JL 608", gate: "14", status: "DELAYED" },
+            { time: "21:25", destination: "BERLIN", flight: "CI5723", gate: "22", status: "CANCELLED" },
+            { time: "21:36", destination: "ROME", flight: "FM 324", gate: "04", status: "CANCELLED" },
+            { time: "21:49", destination: "PARIS", flight: "AF5870", gate: "02", status: "DELAYED" }
+        ];
+
+        let currentIndex = 0;
+        const flightsPerPage = 3;
+
+        function loadFlights() {
+            const tableBody = document.getElementById("flightData");
+            tableBody.innerHTML = "";
+            const endIndex = Math.min(currentIndex + flightsPerPage, flights.length);
+
+            for (let i = currentIndex; i < endIndex; i++) {
+                let statusClass = flights[i].status === "CANCELLED" ? "status-cancelled" : flights[i].status === "DELAYED" ? "status-delayed" : "";
+                let row = `<tr>
+                    <td>${flights[i].time}</td>
+                    <td>${flights[i].destination}</td>
+                    <td>${flights[i].flight}</td>
+                    <td>${flights[i].gate}</td>
+                    <td class="${statusClass}">${flights[i].status}</td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            }
+        }
+
+        function nextFlights() {
+            currentIndex += flightsPerPage;
+            if (currentIndex >= flights.length) {
+                currentIndex = 0; // Quay lại từ đầu nếu hết danh sách
+            }
+            loadFlights();
+        }
+
+        function updateTime() {
+            const now = new Date();
+            const formattedTime = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+            document.getElementById("currentTime").innerText = formattedTime;
+        }
+
+        window.onload = function() {
+            loadFlights();
+            updateTime();
+            setInterval(updateTime, 60000); // Cập nhật thời gian mỗi phút
+            setInterval(nextFlights, 5000); // Tự động chuyển đổi chuyến bay sau mỗi 5 giây
+        };
+    </script>
+
+</body>
+</html>
